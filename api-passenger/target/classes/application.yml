@@ -1,2 +1,12 @@
 server:
   port: 8081
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr:
+          localhost:8848
+  application:
+    name:
+      api-passenger
