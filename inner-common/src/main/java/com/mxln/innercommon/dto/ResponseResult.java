@@ -42,4 +42,12 @@ public class ResponseResult<T> {
                 .setMessage(CommonStatusEnum.FAIL.getMessage());
     }
 
+    public ResponseResult() {
+    }
+
+    public ResponseResult(int code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
 }

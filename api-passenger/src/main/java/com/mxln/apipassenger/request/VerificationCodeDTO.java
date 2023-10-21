@@ -1,13 +1,14 @@
 package com.mxln.apipassenger.request;
 
+import lombok.Data;
+
+@Data
 public class VerificationCodeDTO {
-    private String PassengerPhone;
+    //手机号
+    private String passengerPhone;
 
-    public String getPassengerPhone() {
-        return PassengerPhone;
-    }
+    //验证码
+    private String verificationCode;
 
-    public void setPassengerPhone(String passengerPhone) {
-        PassengerPhone = passengerPhone;
-    }
+
 }
