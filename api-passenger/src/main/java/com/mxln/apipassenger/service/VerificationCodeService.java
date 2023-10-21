@@ -1,10 +1,11 @@
 package com.mxln.apipassenger.service;
 
-import com.mxln.apipassenger.remote.ServiceVerificationcodeClient;
+import com.mxln.apipassenger.remote.ServicePassengerUserClient;
+import com.mxln.apipassenger.remote.ServiceVerificationCodeClient;
 import com.mxln.innercommon.constant.CommonStatusEnum;
 import com.mxln.innercommon.dto.ResponseResult;
+import com.mxln.innercommon.request.VerificationCodeDTO;
 import com.mxln.innercommon.responses.NumberCodeResponse;
-import com.mxln.innercommon.responses.TokenResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,7 +18,10 @@ import java.util.concurrent.TimeUnit;
 public class VerificationCodeService {
 
     @Autowired
-    private ServiceVerificationcodeClient serviceVerificationcodeClient;
+    private ServiceVerificationCodeClient serviceVerificationcodeClient;
+
+    @Autowired
+    private ServicePassengerUserClient servicePassengerUserClient;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -70,6 +74,11 @@ public class VerificationCodeService {
         }
 
         //验证码校验成功
+        //调用服务，登陆或注册用户
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
+        verificationCodeDTO.setPassengerPhone(passengerPhoneNumber);
+        servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
+
         return new ResponseResult().setCode(CommonStatusEnum.VERIFICATION_SUCCESS.getCode())
                 .setMessage(CommonStatusEnum.VERIFICATION_SUCCESS.getMessage());
     }

@@ -1,6 +1,6 @@
 package com.mxln.apipassenger.controller;
 
-import com.mxln.apipassenger.request.VerificationCodeDTO;
+import com.mxln.innercommon.request.VerificationCodeDTO;
 import com.mxln.apipassenger.service.VerificationCodeService;
 import com.mxln.innercommon.dto.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;

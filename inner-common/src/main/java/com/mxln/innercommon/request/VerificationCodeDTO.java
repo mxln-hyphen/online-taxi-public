@@ -1,4 +1,4 @@
-package com.mxln.apipassenger.request;
+package com.mxln.innercommon.request;
 
 import lombok.Data;
 
