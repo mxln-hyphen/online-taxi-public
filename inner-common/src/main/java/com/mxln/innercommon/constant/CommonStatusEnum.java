@@ -12,6 +12,11 @@ public enum CommonStatusEnum {
     VERIFICATION_FAIL(1010,"验证码校验失败"),
     VERIFICATION_NOT_EXIST(1011,"验证码不存在"),
 
+    /**
+     * 1100~1199 Token相关信息
+     */
+    TOKEN_FAIL(1199,"Token error"),
+
 
     /**
      * 成功

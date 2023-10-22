@@ -1,6 +1,10 @@
 package com.mxln.servicepassengeruser.service;
 
+import com.mxln.innercommon.Util.JwtUtil;
+import com.mxln.innercommon.constant.IdentityEnum;
 import com.mxln.innercommon.dto.ResponseResult;
+import com.mxln.innercommon.request.JWTDTO;
+import com.mxln.innercommon.responses.TokenResponse;
 import com.mxln.servicepassengeruser.mapper.PassengerUserMapper;
 import com.mxln.servicepassengeruser.dto.PassengerUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +38,6 @@ public class UserService {
 
             passengerUserMapper.insert(newPassengerUser);
         }
-
-
-        //返回用户token
 
         return ResponseResult.success();
     }

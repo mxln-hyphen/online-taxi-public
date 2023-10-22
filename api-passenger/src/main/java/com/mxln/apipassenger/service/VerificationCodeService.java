@@ -1,15 +1,20 @@
 package com.mxln.apipassenger.service;
 
+import com.mxln.apipassenger.Util.RedisUtil;
 import com.mxln.apipassenger.remote.ServicePassengerUserClient;
 import com.mxln.apipassenger.remote.ServiceVerificationCodeClient;
+import com.mxln.innercommon.Util.JwtUtil;
 import com.mxln.innercommon.constant.CommonStatusEnum;
+import com.mxln.innercommon.constant.IdentityEnum;
+import com.mxln.innercommon.constant.JWTTypeConstant;
 import com.mxln.innercommon.dto.ResponseResult;
+import com.mxln.innercommon.request.JWTDTO;
 import com.mxln.innercommon.request.VerificationCodeDTO;
 import com.mxln.innercommon.responses.NumberCodeResponse;
+import com.mxln.innercommon.responses.TokenResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -26,8 +31,6 @@ public class VerificationCodeService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    private String verificationCodePrefix = "user-verification-code-";
-
     /**
      * 调用验证码服务并存入redis
      *
@@ -40,14 +43,9 @@ public class VerificationCodeService {
         System.out.println(verificationCode);
 
         //验证码存入redis
-        //key
-        String key = this.generatePassengerPhoneCode(pessengerPhoneNumber);
-        //value
-        String value = verificationCode + "";
-        //timeout
-        int ttl = 2;
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        ops.set(key, value, ttl, TimeUnit.MINUTES);
+        RedisUtil redisUtil = new RedisUtil(redisTemplate);
+        redisUtil.insertRedis(redisUtil.generatePassengerPhoneCode(pessengerPhoneNumber)
+                , verificationCode + "", 2, TimeUnit.MINUTES);
 
         return ResponseResult.success();
     }
@@ -55,14 +53,15 @@ public class VerificationCodeService {
     /**
      * 通过手机号在redis中获取验证码，并校验验证码是否正确
      *
-     * @param passengerPhoneNumber
+     * @param passengerPhone
      * @param verificationCode
      * @return
      */
-    public ResponseResult check(String passengerPhoneNumber, String verificationCode) {
+    public ResponseResult check(String passengerPhone, String verificationCode) {
         //获取验证码
-        String key = generatePassengerPhoneCode(passengerPhoneNumber);
-        String redisCode = redisTemplate.opsForValue().get(key);
+        RedisUtil redisUtil = new RedisUtil(redisTemplate);
+        String key = redisUtil.generatePassengerPhoneCode(passengerPhone);
+        String redisCode = redisUtil.get(key);
 
         //校验验证码是否正确
         if (StringUtils.isBlank(redisCode)) {//验证码为空
@@ -76,14 +75,30 @@ public class VerificationCodeService {
         //验证码校验成功
         //调用服务，登陆或注册用户
         VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
-        verificationCodeDTO.setPassengerPhone(passengerPhoneNumber);
-        servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
+        verificationCodeDTO.setPassengerPhone(passengerPhone);
 
-        return new ResponseResult().setCode(CommonStatusEnum.VERIFICATION_SUCCESS.getCode())
-                .setMessage(CommonStatusEnum.VERIFICATION_SUCCESS.getMessage());
-    }
+        //生成双token
+        JwtUtil jwtUtil = new JwtUtil();
+        String accessToken = jwtUtil.generateJWT(new JWTDTO(IdentityEnum.PASSENGER.getIdentity(), passengerPhone)
+                , JWTTypeConstant.ACCESSTOKEN);
+        String refreshToken = jwtUtil.generateJWT(new JWTDTO(IdentityEnum.PASSENGER.getIdentity(), passengerPhone)
+                , JWTTypeConstant.REFRESHTOKEN);
 
-    private String generatePassengerPhoneCode(String passengerPhoneNumber) {
-        return "" + verificationCodePrefix + passengerPhoneNumber;
+
+        //将生成的双token放入redis
+        redisUtil.insertRedis(redisUtil
+                        .generateUser(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.ACCESSTOKEN)
+                , accessToken, 10, TimeUnit.SECONDS);
+        redisUtil.insertRedis(redisUtil
+                        .generateUser(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.REFRESHTOKEN)
+                , refreshToken, 60, TimeUnit.SECONDS);
+
+
+        //返回
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setAccessToken(accessToken);
+        tokenResponse.setRefreshToken(refreshToken);
+
+        return ResponseResult.success(tokenResponse);
     }
 }

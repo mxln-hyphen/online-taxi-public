@@ -15,6 +15,7 @@ public class VerificationController {
     @GetMapping("/verification-code")
     public ResponseResult getVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
         String passengerPhoneNumber = verificationCodeDTO.getPassengerPhone();
+        System.out.println(verificationCodeDTO.getPassengerPhone());
         return verificationCodeService.get(passengerPhoneNumber);
     }
 
@@ -22,6 +23,7 @@ public class VerificationController {
     public ResponseResult checkVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
         String passengerPhoneNumber = verificationCodeDTO.getPassengerPhone();
         String verificationCode = verificationCodeDTO.getVerificationCode();
+        System.out.println(verificationCodeDTO.getPassengerPhone());
         return verificationCodeService.check(passengerPhoneNumber,verificationCode);
     }
 }

@@ -30,13 +30,4 @@ public class VerificationCodeController {
     public String test() {
         return "test";
     }
-
-    public static void main(String[] args) {
-        int size = 6;
-        double num = (Math.random() * 9 + 1) * Math.pow(10, size - 1);
-
-        String numbercode = String.valueOf((int)num);
-        System.out.println(numbercode);
-    }
-
 }
