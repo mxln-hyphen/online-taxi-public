@@ -33,6 +33,12 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.mxln</groupId>
+            <artifactId>inner-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!--mybatisplus-->
         <dependency>
             <groupId>com.baomidou</groupId>
