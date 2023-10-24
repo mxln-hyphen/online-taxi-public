@@ -1,5 +1,6 @@
 package com.mxln.serviceprice.remote;
 
+import com.mxln.innercommon.dto.DistanceDTO;
 import com.mxln.innercommon.dto.ForecastPriceDTO;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.responses.DistanceResponse;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface ServiceMapClient {
 
     @RequestMapping(method = RequestMethod.POST,value = "/direction/driving")
-    public ResponseResult<DistanceResponse> driving(@RequestBody ForecastPriceDTO forecastPriceDTO);
+    public ResponseResult<DistanceResponse> driving(@RequestBody DistanceDTO distanceDTO);
 
 
 }

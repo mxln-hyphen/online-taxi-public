@@ -16,12 +16,16 @@ public class PriceService {
 
     public ResponseResult<ForecastPriceResponse> forecastPrice(ForecastPriceDTO forecastPriceDTO) {
         System.out.println("api-passenger:forecastPrice");
-        //请求service-price获取价格
-        servicePriceClient.forecastPrice(forecastPriceDTO);
 
+        //请求service-price获取价格
+        ResponseResult<ForecastPriceResponse> forecastPriceResponseResponseResult
+                = servicePriceClient.forecastPrice(forecastPriceDTO);
 
         //响应
-        return ResponseResult.success();
+        String forecastPrice = forecastPriceResponseResponseResult.getData().getForecastPrice();
+        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
+        forecastPriceResponse.setForecastPrice(forecastPrice);
+        return ResponseResult.success(forecastPriceResponse);
 
     }
 }

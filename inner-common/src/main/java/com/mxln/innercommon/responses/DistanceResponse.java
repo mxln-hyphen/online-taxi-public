@@ -8,6 +8,6 @@ public class DistanceResponse {
     //距离：米
     private int distance;
 
-    //时长：分钟
+    //时长：秒
     private int duration;
 }

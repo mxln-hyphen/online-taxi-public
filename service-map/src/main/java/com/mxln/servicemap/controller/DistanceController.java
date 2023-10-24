@@ -1,5 +1,6 @@
 package com.mxln.servicemap.controller;
 
+import com.mxln.innercommon.dto.DistanceDTO;
 import com.mxln.innercommon.dto.ForecastPriceDTO;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.responses.DistanceResponse;
@@ -16,11 +17,9 @@ public class DistanceController {
     private DistanceService distanceService;
 
     @PostMapping("/direction/driving")
-    public ResponseResult<DistanceResponse> driving(@RequestBody ForecastPriceDTO forecastPriceDTO){
+    public ResponseResult<DistanceResponse> driving(@RequestBody DistanceDTO distanceDTO){
 
-        distanceService.driving(forecastPriceDTO);
-
-        return ResponseResult.success();
+        return distanceService.driving(distanceDTO);
     }
 
 }

@@ -19,13 +19,13 @@ public class PriceController {
 
     @PostMapping("/forecast-price")
     public ResponseResult<ForecastPriceResponse> forecastPrice(@RequestBody ForecastPriceRequest forecastPriceRequest){
-        System.out.println(forecastPriceRequest.getDepLatitude());
-        System.out.println(forecastPriceRequest.getDepLongitude());
-        System.out.println(forecastPriceRequest.getDestLatitude());
-        System.out.println(forecastPriceRequest.getDestLongitude());
+        ForecastPriceDTO forecastPriceDTO = new ForecastPriceDTO();
+        forecastPriceDTO.setDepLatitude(forecastPriceRequest.getDepLatitude());
+        forecastPriceDTO.setDepLongitude(forecastPriceRequest.getDepLongitude());
+        forecastPriceDTO.setDestLatitude(forecastPriceRequest.getDestLatitude());
+        forecastPriceDTO.setDestLongitude(forecastPriceRequest.getDestLongitude());
 
-        priceService.forecastPrice(new ForecastPriceDTO());
 
-        return ResponseResult.success();
+        return priceService.forecastPrice(forecastPriceDTO);
     }
 }
