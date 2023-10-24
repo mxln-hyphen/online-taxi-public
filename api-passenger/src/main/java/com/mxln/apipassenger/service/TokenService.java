@@ -22,6 +22,18 @@ public class TokenService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    public static void main(String[] args) {
+        String refreshToken ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjEzOTI0MjkxMDQ5IiwiaWRlbnRpdHkiOiIxMDAwIiwiZXhwaXJhdGlvbiI6MTY5ODA0NjA1NywidHlwZSI6ImFjY2VzcyJ9.t5MYTuTI_Ulcl98zTNOdxt1AjjY5XnZZl71PtH-vP48";
+        TokenService tokenService = new TokenService();
+        //解析refreshToken
+        TokenResult decode = tokenService.analyzeToken(refreshToken);
+
+        //检验refreshToken与redis中的token是否相等
+        RedisUtil redisUtil = new RedisUtil(tokenService.redisTemplate);
+        System.out.println(redisUtil
+                .generateUserJWT(decode.getPhone(), decode.getIdentity(),decode.getType()));
+    }
+
     /**
      * 校验refresh Token并返回双token
      * @param refreshToken
@@ -29,18 +41,14 @@ public class TokenService {
      */
     public ResponseResult refresh(String refreshToken){
         //解析refreshToken
-        JwtUtil jwtUtil = new JwtUtil();
-        TokenResult decode=null;
-        try {
-            decode = jwtUtil.decode(refreshToken);
-        }catch (Exception e){
-
-        }
+        TokenResult decode = analyzeToken(refreshToken);
 
         //检验refreshToken与redis中的token是否相等
         RedisUtil redisUtil = new RedisUtil(redisTemplate);
+        System.out.println(redisUtil
+                .generateUserJWT(decode.getPhone(), decode.getIdentity(),decode.getType()));
         String redistoken = redisUtil.get(redisUtil
-                .generateUser(decode.getPhone(), decode.getIdentity(),decode.getType()));
+                .generateUserJWT(decode.getPhone(), decode.getIdentity(),decode.getType()));
 
         if (StringUtils.isBlank(redistoken)) {
             return new ResponseResult().setCode(CommonStatusEnum.TOKEN_FAIL.getCode()).setMessage("token not exist");
@@ -49,10 +57,11 @@ public class TokenService {
         }
 
         //生成accessToken并存入redis
+        JwtUtil jwtUtil = new JwtUtil();
         String accessToken = jwtUtil.generateJWT(new JWTDTO(IdentityEnum.PASSENGER.getIdentity(), decode.getPhone())
                 , JWTTypeConstant.ACCESSTOKEN);
         redisUtil.insertRedis(redisUtil
-                        .generateUser(decode.getPhone(), IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.ACCESSTOKEN)
+                        .generateUserJWT(decode.getPhone(), IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.ACCESSTOKEN)
                 , accessToken, 10, TimeUnit.SECONDS);
         //返回双token
         TokenResponse tokenResponse = new TokenResponse();
@@ -60,6 +69,23 @@ public class TokenService {
         tokenResponse.setRefreshToken(refreshToken);
 
         return ResponseResult.success(tokenResponse);
+    }
+
+    /**
+     * 解析Token
+     * @param token
+     * @return
+     */
+    public TokenResult analyzeToken(String token){
+        //解析refreshToken
+        JwtUtil jwtUtil = new JwtUtil();
+        TokenResult decode=null;
+        try {
+            decode = jwtUtil.decode(token);
+        }catch (Exception e){
+
+        }
+        return decode;
     }
 
 }

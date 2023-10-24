@@ -9,7 +9,6 @@ import com.mxln.innercommon.Util.JwtUtil;
 import com.mxln.innercommon.constant.CommonStatusEnum;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.dto.TokenResult;
-import com.mxln.innercommon.request.JWTDTO;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,17 +48,19 @@ public class JWTInterceptor implements HandlerInterceptor {
         }
 
 
-        //根据用户信息从redis获取token
-        RedisUtil redisUtil = new RedisUtil(redisTemplate);
-        String redistoken = redisUtil.get(redisUtil
-                .generateUser(decode.getPhone(), decode.getIdentity(),decode.getType()));
+        if (flag) {
+            //根据用户信息从redis获取token
+            RedisUtil redisUtil = new RedisUtil(redisTemplate);
+            String redistoken = redisUtil.get(redisUtil
+                    .generateUserJWT(decode.getPhone(), decode.getIdentity(), decode.getType()));
 
-        if (StringUtils.isBlank(redistoken)) {
-            errorMessage = "token not exist";
-            flag = false;
-        } else if (!redistoken.trim().equals(token.trim())) {
-            errorMessage = "token error";
-            flag = false;
+            if (StringUtils.isBlank(redistoken)) {
+                errorMessage = "token not exist";
+                flag = false;
+            } else if (!redistoken.trim().equals(token.trim())) {
+                errorMessage = "token error";
+                flag = false;
+            }
         }
 
         if (!flag) {

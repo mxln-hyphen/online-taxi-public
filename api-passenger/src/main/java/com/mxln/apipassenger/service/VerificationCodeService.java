@@ -87,10 +87,10 @@ public class VerificationCodeService {
 
         //将生成的双token放入redis
         redisUtil.insertRedis(redisUtil
-                        .generateUser(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.ACCESSTOKEN)
+                        .generateUserJWT(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.ACCESSTOKEN)
                 , accessToken, 10, TimeUnit.SECONDS);
         redisUtil.insertRedis(redisUtil
-                        .generateUser(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.REFRESHTOKEN)
+                        .generateUserJWT(passengerPhone, IdentityEnum.PASSENGER.getIdentity(), JWTTypeConstant.REFRESHTOKEN)
                 , refreshToken, 60, TimeUnit.SECONDS);
 
 

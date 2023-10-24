@@ -1,4 +1,4 @@
-package com.mxln.servicepassengeruser.dto;
+package com.mxln.innercommon.dto;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -22,4 +22,6 @@ public class PassengerUserDTO {
     private LocalDateTime gmt_create;
 
     private LocalDateTime gmt_modified;
+
+    private String profilePhoto;
 }

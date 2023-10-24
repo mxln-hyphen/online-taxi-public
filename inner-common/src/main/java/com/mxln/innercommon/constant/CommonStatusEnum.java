@@ -17,6 +17,10 @@ public enum CommonStatusEnum {
      */
     TOKEN_FAIL(1199,"Token error"),
 
+    /**
+     * 1200~1299 用户信息相关
+     */
+    USER_NOT_EXIST(1211,"User not exist"),
 
     /**
      * 成功

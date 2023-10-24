@@ -24,7 +24,7 @@ public class RedisUtil {
         return "" + verificationCodePrefix + passengerPhoneNumber;
     }
 
-    public String generateUser(String passengerPhone, int identity, String type) {
+    public String generateUserJWT(String passengerPhone, int identity, String type) {
         return "" + JWTPrefix + passengerPhone + "-" + identity + "-" + type;
     }
 
