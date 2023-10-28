@@ -7,19 +7,27 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="api-boss" />
+        <module name="api-passenger" />
+        <module name="service-driver-user" />
         <module name="service-price" />
         <module name="service-map" />
-        <module name="api-passenger" />
         <module name="verificationcode" />
         <module name="service-passenger-user" />
         <module name="inner-common" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="demo" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-boss" options="-parameters" />
       <module name="api-passenger" options="-parameters" />
+      <module name="demo" options="-parameters" />
       <module name="inner-common" options="-parameters" />
+      <module name="service-driver-user" options="-parameters" />
       <module name="service-map" options="-parameters" />
       <module name="service-passenger-user" options="-parameters" />
       <module name="service-price" options="-parameters" />
