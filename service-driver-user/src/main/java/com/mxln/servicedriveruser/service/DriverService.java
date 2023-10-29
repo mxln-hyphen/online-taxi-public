@@ -56,7 +56,7 @@ public class DriverService {
         driverMapper.update(driverUserDTO,wrapper);
 
         //响应
-        return ResponseResult.success("1231231");
+        return ResponseResult.success();
     }
 
     /**
