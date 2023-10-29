@@ -1,6 +1,6 @@
 package com.mxln.apipassenger.service;
 
-import com.mxln.apipassenger.Util.RedisUtil;
+import com.mxln.innercommon.Util.RedisUtil;
 import com.mxln.innercommon.Util.JwtUtil;
 import com.mxln.innercommon.constant.CommonStatusEnum;
 import com.mxln.innercommon.constant.IdentityEnum;

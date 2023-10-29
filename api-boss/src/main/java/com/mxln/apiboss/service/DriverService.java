@@ -26,7 +26,7 @@ public class DriverService {
     }
 
     /**
-     * 请求service-driver-user服务完成新建司机数据
+     * 请求service-driver-user服务完成修改司机数据
      * @param driverInfoRequest
      * @return
      */

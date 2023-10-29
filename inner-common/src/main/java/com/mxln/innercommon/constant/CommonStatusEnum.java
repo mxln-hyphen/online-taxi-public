@@ -23,6 +23,15 @@ public enum CommonStatusEnum {
     USER_NOT_EXIST(1211,"User not exist"),
 
     /**
+     * 1300~1399 司机和车辆相关
+     */
+    DRIVER_NOT_EXIST(1311,"Driver not exist"),
+    CAR_NOT_EXIST(1321,"Car not exist"),
+    CAR_IS_BIND(1421,"Car had binded"),
+    CAR_IS_NOT_BIND(1422,"Car had not binded"),
+
+
+    /**
      * 成功
      */
     SUCCESS(1,"success"),

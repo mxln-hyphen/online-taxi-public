@@ -1,10 +1,7 @@
-package com.mxln.apipassenger.Util;
+package com.mxln.innercommon.Util;
 
-import com.mxln.innercommon.constant.IdentityEnum;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +9,8 @@ public class RedisUtil {
     private StringRedisTemplate redisTemplate;
 
     //redis前缀
-    private final String verificationCodePrefix = "user-verification-code-";
+    private final String PassengerVerificationCodePrefix = "user-verification-code-";
+    private final String DriverVerificationCodePrefix = "driver-verification-code-";
     private final String JWTPrefix = "jwt-";
 
 
@@ -21,11 +19,15 @@ public class RedisUtil {
     }
 
     public String generatePassengerPhoneCode(String passengerPhoneNumber) {
-        return "" + verificationCodePrefix + passengerPhoneNumber;
+        return "" + PassengerVerificationCodePrefix + passengerPhoneNumber;
     }
 
     public String generateUserJWT(String passengerPhone, int identity, String type) {
         return "" + JWTPrefix + passengerPhone + "-" + identity + "-" + type;
+    }
+
+    public String generateDriverPhoneCode(String driverPhoneNumber) {
+        return "" + DriverVerificationCodePrefix + driverPhoneNumber;
     }
 
     /**

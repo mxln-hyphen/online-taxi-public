@@ -4,7 +4,7 @@ package com.mxln.apipassenger.interceptor;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.mxln.apipassenger.Util.RedisUtil;
+import com.mxln.innercommon.Util.RedisUtil;
 import com.mxln.innercommon.Util.JwtUtil;
 import com.mxln.innercommon.constant.CommonStatusEnum;
 import com.mxln.innercommon.dto.ResponseResult;

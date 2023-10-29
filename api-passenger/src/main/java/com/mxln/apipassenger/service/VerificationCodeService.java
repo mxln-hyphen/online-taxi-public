@@ -1,6 +1,6 @@
 package com.mxln.apipassenger.service;
 
-import com.mxln.apipassenger.Util.RedisUtil;
+import com.mxln.innercommon.Util.RedisUtil;
 import com.mxln.apipassenger.remote.ServicePassengerUserClient;
 import com.mxln.apipassenger.remote.ServiceVerificationCodeClient;
 import com.mxln.innercommon.Util.JwtUtil;
@@ -32,7 +32,7 @@ public class VerificationCodeService {
     private StringRedisTemplate redisTemplate;
 
     /**
-     * 调用验证码服务并存入redis
+     * 乘客获取验证码，并将验证码存入redis
      *
      * @return
      */
@@ -51,7 +51,7 @@ public class VerificationCodeService {
     }
 
     /**
-     * 通过手机号在redis中获取验证码，并校验验证码是否正确
+     * 乘客通过手机号登陆
      *
      * @param passengerPhone
      * @param verificationCode

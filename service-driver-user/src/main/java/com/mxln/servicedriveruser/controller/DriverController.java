@@ -2,12 +2,11 @@ package com.mxln.servicedriveruser.controller;
 
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.DriverInfoRequest;
+import com.mxln.innercommon.request.VerificationCodeDTO;
+import com.mxln.innercommon.responses.IsExistResponse;
 import com.mxln.servicedriveruser.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DriverController {
@@ -25,6 +24,12 @@ public class DriverController {
     public ResponseResult putDriver(@RequestBody DriverInfoRequest driverInfoRequest){
 
         return driverService.putDriver(driverInfoRequest);
+    }
+
+    @GetMapping("/check-driver/{driverPhone}")
+    public ResponseResult<IsExistResponse> checkDriver(@PathVariable("driverPhone")String driverPhone){
+
+        return driverService.checkDriverByPhone(driverPhone);
     }
 
 }
