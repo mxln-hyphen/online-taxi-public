@@ -14,3 +14,8 @@ spring:
     host: localhost
     port: 6379
     database: 0
+
+
+Amap:
+  key: "9e8f8ea4ba4cd6a55bfcd54d8b869f80"
+  sid: 1009278

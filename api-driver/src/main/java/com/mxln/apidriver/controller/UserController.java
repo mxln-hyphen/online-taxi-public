@@ -4,10 +4,7 @@ import com.mxln.apidriver.service.UserService;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.DriverInfoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -19,6 +16,12 @@ public class UserController {
     public ResponseResult driver(@RequestBody DriverInfoRequest driverInfoRequest){
 
         return userService.driver(driverInfoRequest);
+    }
+
+    @GetMapping("/test")
+    public ResponseResult test(){
+        System.out.println("test");
+        return ResponseResult.success();
     }
 
 }

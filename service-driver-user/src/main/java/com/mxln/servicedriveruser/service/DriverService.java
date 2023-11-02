@@ -2,12 +2,15 @@ package com.mxln.servicedriveruser.service;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.mxln.innercommon.constant.CommonStatusEnum;
+import com.mxln.innercommon.constant.DriverCarConstant;
 import com.mxln.innercommon.dto.DriverUserDTO;
+import com.mxln.innercommon.dto.DriverWorkStatusDTO;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.DriverInfoRequest;
 import com.mxln.innercommon.request.VerificationCodeDTO;
 import com.mxln.innercommon.responses.IsExistResponse;
 import com.mxln.servicedriveruser.mapper.DriverMapper;
+import com.mxln.servicedriveruser.mapper.DriverWorkStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +31,9 @@ public class DriverService {
     @Autowired
     private DriverMapper driverMapper;
 
+    @Autowired
+    private DriverWorkStatusMapper driverWorkStatusMapper;
+
     /**
      * 将司机信息写入数据库
      *
@@ -38,8 +44,14 @@ public class DriverService {
         //生成DriverUserDTO实例
         DriverUserDTO driverUserDTO = generateDriverUserDTO(driverInfoRequest);
 
-        //数据写入数据库
+        //司机信息数据写入driver表
         driverMapper.insert(driverUserDTO);
+
+        //生成DriverWorkStatusDTO实例
+        DriverWorkStatusDTO driverWorkStatusDTO = generateDriverWorkStatusDTO(driverInfoRequest);
+
+        //司机工作状态初始化数据写入driver_work_status表
+        driverWorkStatusMapper.insert(driverWorkStatusDTO);
 
         //响应
         return ResponseResult.success();
@@ -65,6 +77,21 @@ public class DriverService {
 
         //响应
         return ResponseResult.success();
+    }
+
+    /**
+     * 根据司机id查询司机信息
+     * @param driverInfoRequest
+     * @return
+     */
+    public ResponseResult getDriver(DriverInfoRequest driverInfoRequest) {
+        //根据司机id查询driver表中的信息
+        Map<String, Object> map = new HashMap<>();
+        map.put("id",driverInfoRequest.getId());
+        List<DriverUserDTO> driverUserDTOS = driverMapper.selectByMap(map);
+
+        //响应
+        return ResponseResult.success(driverUserDTOS.get(0));
     }
 
     /**
@@ -137,6 +164,20 @@ public class DriverService {
         driverUserDTO.setUpdateTime(generateLocalTime(driverInfoRequest.getUpdateTime()));
 
         return driverUserDTO;
+    }
+
+    /**
+     * 生成DriverWorkStatusDTO实例
+     * @param driverInfoRequest
+     * @return
+     */
+    private DriverWorkStatusDTO generateDriverWorkStatusDTO(DriverInfoRequest driverInfoRequest){
+        DriverWorkStatusDTO driverWorkStatusDTO = new DriverWorkStatusDTO();
+        driverWorkStatusDTO.setDriverId((long) Integer.parseInt(driverInfoRequest.getId()));
+        driverWorkStatusDTO.setWorkStatus(DriverCarConstant.DRIVER_WORK_STATUS_RELEX);
+        driverWorkStatusDTO.setGmt_modified(LocalDateTime.now());
+        driverWorkStatusDTO.setGmt_create(LocalDateTime.now());
+        return driverWorkStatusDTO;
     }
 
     public LocalDate generateLocalTime(String time) {

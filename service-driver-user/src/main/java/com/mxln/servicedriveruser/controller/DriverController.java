@@ -26,6 +26,11 @@ public class DriverController {
         return driverService.putDriver(driverInfoRequest);
     }
 
+    @GetMapping("/driver")
+    public ResponseResult getDriver(@RequestBody DriverInfoRequest driverInfoRequest) {
+        return driverService.getDriver(driverInfoRequest);
+    }
+
     @GetMapping("/check-driver/{driverPhone}")
     public ResponseResult<IsExistResponse> checkDriver(@PathVariable("driverPhone")String driverPhone){
 

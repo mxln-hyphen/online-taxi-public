@@ -4,17 +4,54 @@ import com.mxln.innercommon.dto.CarDTO;
 import com.mxln.innercommon.dto.DriverUserDTO;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.CarInfoRequest;
+import com.mxln.innercommon.request.DriverInfoRequest;
+import com.mxln.innercommon.request.TrackRequest;
 import com.mxln.servicedriveruser.mapper.CarMapper;
+import com.mxln.servicedriveruser.remote.ServiceMapClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CarService {
 
+    @Value("${Amap.key}")
+    private String key;
+
+    @Value("${Amap.sid}")
+    private Integer sid;
+
     @Autowired
     private CarMapper carMapper;
 
+    @Autowired
+    private ServiceMapClient serviceMapClient;
+
+    /**
+     * 创建车辆信息
+     * @param carInfoRequest
+     * @return
+     */
     public ResponseResult car(CarInfoRequest carInfoRequest){
+        //根据车牌号生成tid
+        TrackRequest trackRequest = new TrackRequest();
+        trackRequest.setName(carInfoRequest.getVehicleNo());
+        trackRequest.setKey(key);
+        trackRequest.setSid(sid);
+        ResponseResult<TrackRequest> trackRequestResponseResult = serviceMapClient.terminalAdd(trackRequest);
+        trackRequest = trackRequestResponseResult.getData();
+        carInfoRequest.setTid(String.valueOf(trackRequest.getTid()));
+
+        //根据tid生成trid
+        trackRequestResponseResult = serviceMapClient.traceAdd(trackRequest);
+        trackRequest = trackRequestResponseResult.getData();
+        carInfoRequest.setTrid(String.valueOf(trackRequest.getTrid()));
+
+
         //生成CarDTO实例
         CarDTO carDTO = generateCarDTO(carInfoRequest);
 
@@ -23,6 +60,21 @@ public class CarService {
 
         //响应
         return ResponseResult.success();
+    }
+
+    /**
+     * 根据车辆id查询车辆信息
+     * @param carInfoRequest
+     * @return
+     */
+    public ResponseResult getCar(CarInfoRequest carInfoRequest) {
+        //根据车辆id查询driver表中的信息
+        Map<String, Object> map = new HashMap<>();
+        map.put("id",carInfoRequest.getId());
+        List<CarDTO> driverUserDTOS = carMapper.selectByMap(map);
+
+        //响应
+        return ResponseResult.success(driverUserDTOS.get(0));
     }
 
     /**
