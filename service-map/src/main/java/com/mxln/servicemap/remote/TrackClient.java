@@ -46,6 +46,10 @@ public class TrackClient {
         builder.append("name");
         builder.append("=");
         builder.append(trackRequest.getName());
+        builder.append("&");
+        builder.append("desc");
+        builder.append("=");
+        builder.append(trackRequest.getDesc());
 
         //调用高德地图猎鹰API
         ResponseEntity<String> forEntity = restTemplate.postForEntity(builder.toString(), null,String.class);
@@ -129,6 +133,31 @@ public class TrackClient {
 
         //响应
         return forEntity.getBody();
+    }
+
+    /**
+     * 调用高德地图猎鹰API进行周边终端搜索
+     * @param trackRequest
+     * @return
+     */
+    public JSONObject aroundSearch(TrackRequest trackRequest){
+        //组装URL
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>(){{
+            add("key",trackRequest.getKey());
+            add("sid",trackRequest.getSid());
+            add("center",trackRequest.getCenter());
+            add("radius",trackRequest.getRadius());
+        }};
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, headers);
+
+        //调用高德地图猎鹰API
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(AmapLieyingConfigConstant.AROUNDSEARCH_URL
+                , request,String.class);
+
+        //响应
+        return JSONObject.fromObject(forEntity.getBody()).getJSONObject("data");
     }
 
 }

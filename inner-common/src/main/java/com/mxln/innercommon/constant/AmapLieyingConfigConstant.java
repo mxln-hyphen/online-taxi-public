@@ -18,5 +18,8 @@ public class AmapLieyingConfigConstant {
     public static String TRACE_ADD_URL = "https://tsapi.amap.com/v1/track/trace/add";
 
     //上传轨迹点
-    public static String POINT_UPLOAD_URL ="https://tsapi.amap.com/v1/track/point/upload";
+    public static String POINT_UPLOAD_URL = "https://tsapi.amap.com/v1/track/point/upload";
+
+    //周边终端搜索
+    public static String AROUNDSEARCH_URL = "https://tsapi.amap.com/v1/track/terminal/aroundsearch";
 }

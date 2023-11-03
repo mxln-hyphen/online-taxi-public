@@ -1,5 +1,6 @@
 package com.mxln.serviceprice.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mxln.innercommon.Util.BigDecimalUtil;
 import com.mxln.innercommon.dto.DistanceDTO;
 import com.mxln.innercommon.dto.ForecastPriceDTO;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -40,10 +42,12 @@ public class PriceService {
         //请求service-map获取距离信息
         ResponseResult<DistanceResponse> distanceResponseResponseResult = serviceMapClient.driving(distanceDTO);
 
-        //获取计价规则
-        Map<String, Object> map = new HashMap<>();
-        map.put("city_code", 1);
-        PriceRuleDTO priceRuleDTO = priceMapper.selectByMap(map).get(0);
+        //获取最新版本计价规则，若不存在则将版本设置为1，否则将版本设置为原版本加1
+        QueryWrapper<PriceRuleDTO> wrapper = new QueryWrapper<>();
+        wrapper.eq("city_code", forecastPriceDTO.getCityCode());
+        wrapper.eq("vehicle_type", forecastPriceDTO.getVehicleType());
+        wrapper.orderByDesc("fare_version");
+        PriceRuleDTO priceRuleDTO = priceMapper.selectList(wrapper).get(0);
 
         //根据距离信息和计价规则计算预估价格
         double price = getPrice(priceRuleDTO,

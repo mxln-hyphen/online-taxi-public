@@ -23,4 +23,13 @@ public class TrackRequest {
 
     private LocateDTO[] points;
 
+    //记录车辆id
+    private String desc;
+
+    //中心位置
+    private String center;
+
+    //搜索半径
+    private String radius;
+
 }

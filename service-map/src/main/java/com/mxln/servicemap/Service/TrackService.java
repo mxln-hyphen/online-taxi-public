@@ -3,6 +3,7 @@ package com.mxln.servicemap.Service;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.TrackRequest;
 import com.mxln.servicemap.remote.TrackClient;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,5 +51,18 @@ public class TrackService {
 
         //响应
         return ResponseResult.success();
+    }
+
+    /**
+     * 周边搜索终端
+     * @param trackRequest
+     * @return
+     */
+    public ResponseResult<TrackRequest> aroundSearch(TrackRequest trackRequest){
+        //调用高德地图猎鹰API进行周边终端搜索
+        JSONObject data = trackClient.aroundSearch(trackRequest);
+
+        //响应
+        return ResponseResult.success(data);
     }
 }

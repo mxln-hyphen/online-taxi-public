@@ -1,11 +1,9 @@
-package com.mxln.innercommon.dto;
+package com.mxln.innercommon.request;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("tbl_price_rule")
-public class PriceRuleDTO {
+public class PriceRuleRequest {
 
     private String cityCode;
 
@@ -18,9 +16,4 @@ public class PriceRuleDTO {
     private Double unitPricePerMile;
 
     private Double unitPricePerMinute;
-
-    private String fareType;
-
-    private Integer fareVersion;
-
 }

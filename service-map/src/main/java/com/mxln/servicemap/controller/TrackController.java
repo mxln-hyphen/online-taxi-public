@@ -31,11 +31,14 @@ public class TrackController {
     @PostMapping("/track/point/upload")
     public ResponseResult pointUpload(@RequestBody TrackRequest trackRequest){
 
-        System.out.println(trackRequest.getKey());
-        System.out.println(trackRequest.getPoints());
-
-
         return trackService.pointUpload(trackRequest);
+    }
+
+    @PostMapping("/track/terminal/aroundsearch")
+    public ResponseResult aroundSearch(@RequestBody TrackRequest trackRequest){
+
+
+        return trackService.aroundSearch(trackRequest);
     }
 
 }
