@@ -16,7 +16,11 @@ spring:
     username: root
     password: root
 
-
 Amap:
   key: "9e8f8ea4ba4cd6a55bfcd54d8b869f80"
   sid: 1009278
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml

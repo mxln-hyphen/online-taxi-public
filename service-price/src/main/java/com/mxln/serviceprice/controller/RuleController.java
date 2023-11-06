@@ -5,20 +5,23 @@ import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.request.PriceRuleRequest;
 import com.mxln.serviceprice.Service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/rule")
 public class RuleController {
 
     @Autowired
     private RuleService ruleService;
 
-    @PostMapping("/rule/add")
+    @PostMapping("/add")
     public ResponseResult ruleAdd(@RequestBody PriceRuleRequest priceRuleRequest){
 
         return ruleService.ruleAdd(priceRuleRequest);
+    }
 
+    @GetMapping("/if-exist")
+    public ResponseResult<Boolean> ifExist(@RequestBody PriceRuleRequest priceRuleRequest){
+        return  ruleService.ifExist(priceRuleRequest);
     }
 }

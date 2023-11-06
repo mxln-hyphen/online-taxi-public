@@ -27,8 +27,19 @@ public enum CommonStatusEnum {
      */
     DRIVER_NOT_EXIST(1311,"Driver not exist"),
     CAR_NOT_EXIST(1321,"Car not exist"),
-    CAR_IS_BIND(1421,"Car had binded"),
-    CAR_IS_NOT_BIND(1422,"Car had not binded"),
+    CAR_IS_BIND(1341,"Car had binded"),
+    CAR_IS_NOT_BIND(1332,"Car had not binded"),
+    CITY_HAS_NO_ACTIVE_DRIVER(1341,"城市无可用司机"),
+
+    /**
+     * 1400~1499 订单相关
+     */
+    ORDER_IS_EXIST(1411,"order is exist!"),
+
+    /**
+     * 1500~1599 价格相关
+     */
+    PRICE_RULE_NOT_EXIST(1511,"price rule not exist"),
 
 
     /**
