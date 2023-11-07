@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class OrderInfoRequest {
 
-    private String passengerId;
+    private Long passengerId;
 
     private String address;
 
@@ -33,4 +33,8 @@ public class OrderInfoRequest {
     private Integer encrypt;
 
     private String fareType;
+
+    private String cityCode;
+
+    private String vehicleType;
 }

@@ -19,6 +19,11 @@ public class DriverWorkStatusService {
     @Autowired
     private DriverWorkStatusMapper driverWorkStatusMapper;
 
+    /**
+     * 修改司机工作状态
+     * @param driverWorkStatusRequest
+     * @return
+     */
     public ResponseResult changeDriverWorkStatus(DriverWorkStatusRequest driverWorkStatusRequest) {
 
         //生成DriverWorkStatusDTO
@@ -34,6 +39,11 @@ public class DriverWorkStatusService {
         return ResponseResult.success();
     }
 
+    /**
+     * 生成DriverWorkStatusDTO
+     * @param driverWorkStatusRequest
+     * @return
+     */
     public DriverWorkStatusDTO generateDriverWorkStatusDTO(DriverWorkStatusRequest driverWorkStatusRequest) {
         DriverWorkStatusDTO driverWorkStatusDTO = new DriverWorkStatusDTO();
         driverWorkStatusDTO.setDriverId(driverWorkStatusRequest.getDriverId());

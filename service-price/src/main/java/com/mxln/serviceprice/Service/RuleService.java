@@ -46,7 +46,8 @@ public class RuleService {
         //查询计价规则是否存在
         if(getRecentPriceRule(priceRuleRequest.getCityCode(),priceRuleRequest.getVehicleType())==0){//如果最新版本号是0
             return ResponseResult.fail().setCode(CommonStatusEnum.PRICE_RULE_NOT_EXIST.getCode())
-                    .setMessage(CommonStatusEnum.PRICE_RULE_NOT_EXIST.getMessage());
+                    .setMessage(CommonStatusEnum.PRICE_RULE_NOT_EXIST.getMessage())
+                    .setData(false);
         }
 
         //响应

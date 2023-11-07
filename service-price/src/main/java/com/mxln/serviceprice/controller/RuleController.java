@@ -20,7 +20,7 @@ public class RuleController {
         return ruleService.ruleAdd(priceRuleRequest);
     }
 
-    @GetMapping("/if-exist")
+    @PostMapping("/if-exist")
     public ResponseResult<Boolean> ifExist(@RequestBody PriceRuleRequest priceRuleRequest){
         return  ruleService.ifExist(priceRuleRequest);
     }

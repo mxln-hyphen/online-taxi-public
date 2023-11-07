@@ -1,13 +1,15 @@
 package com.mxln.servicedriveruser.service;
 
-import com.mxln.innercommon.dto.CarDTO;
-import com.mxln.innercommon.dto.DriverUserDTO;
-import com.mxln.innercommon.dto.ResponseResult;
+import com.mxln.innercommon.dto.*;
 import com.mxln.innercommon.request.CarInfoRequest;
 import com.mxln.innercommon.request.DriverInfoRequest;
 import com.mxln.innercommon.request.TrackRequest;
+import com.mxln.innercommon.responses.DriverWorkInfoResponse;
 import com.mxln.servicedriveruser.mapper.CarMapper;
+import com.mxln.servicedriveruser.mapper.DriverCarBindingRelationshipMapper;
+import com.mxln.servicedriveruser.mapper.DriverWorkStatusMapper;
 import com.mxln.servicedriveruser.remote.ServiceMapClient;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,18 @@ public class CarService {
     private CarMapper carMapper;
 
     @Autowired
+    private DriverCarBindingRelationshipMapper driverCarBindingRelationshipMapper;
+
+    @Autowired
+    private DriverWorkStatusMapper driverWorkStatusMapper;
+
+    @Autowired
     private ServiceMapClient serviceMapClient;
+
+    @Autowired
+    private DriverService driverService;
+
+
 
     /**
      * 创建车辆信息
@@ -75,6 +88,56 @@ public class CarService {
 
         //响应
         return ResponseResult.success(driverUserDTOS.get(0));
+    }
+
+    /**
+     * 根据车辆id获取司机信息
+     * @param carId
+     * @return
+     */
+    public ResponseResult getDriver(String carId){
+        DriverWorkInfoResponse driverWorkInfoResponse = new DriverWorkInfoResponse();
+
+        //根据车辆Id获取司机Id
+        Long driverId = getDriverId(carId);
+        driverWorkInfoResponse.setDriverId(driverId);
+        //根据司机Id获取司机信息
+        DriverInfoRequest driverInfoRequest = new DriverInfoRequest();
+        driverInfoRequest.setId(String.valueOf(driverId));
+        ResponseResult driverResponseResult = driverService.getDriver(driverInfoRequest);
+        JSONObject driverJsonObject = JSONObject.fromObject(driverResponseResult.getData());
+        driverWorkInfoResponse.setDriverPhone(driverJsonObject.getString("driverPhone"));
+        //根据司机Id获取司机工作状态
+        driverWorkInfoResponse.setDriverWorkState(getDriverWorkState(driverId));
+
+        //响应
+        return ResponseResult.success(driverWorkInfoResponse);
+    }
+
+    /**
+     * 根据司机Id获取司机工作状态
+     * @param driverID
+     * @return
+     */
+    private int getDriverWorkState(Long driverID){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("driver_Id",driverID);
+        List<DriverWorkStatusDTO> driverWorkStatusDTOS = driverWorkStatusMapper.selectByMap(map);
+        return driverWorkStatusDTOS.get(0).getWorkStatus();
+    }
+
+    /**
+     * 根据车辆Id获取司机Id
+     * @param carId
+     * @return
+     */
+    public Long getDriverId(String carId){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("car_id",carId);
+        map.put("bind_state",1);
+        List<DriverCarBindingRelationshipDTO> driverCarBindingRelationshipDTOS
+                = driverCarBindingRelationshipMapper.selectByMap(map);
+        return driverCarBindingRelationshipDTOS.get(0).getDriverId();
     }
 
     /**
