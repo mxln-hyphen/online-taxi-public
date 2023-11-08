@@ -91,6 +91,15 @@ public class CarService {
     }
 
     /**
+     * 根据车辆id获取车辆信息
+     * @param carId
+     * @return
+     */
+    private CarDTO getCar(Long carId){
+        return carMapper.selectById(carId);
+    }
+
+    /**
      * 根据车辆id获取司机信息
      * @param carId
      * @return
@@ -98,17 +107,23 @@ public class CarService {
     public ResponseResult getDriver(String carId){
         DriverWorkInfoResponse driverWorkInfoResponse = new DriverWorkInfoResponse();
 
+        //根据车辆id获取车辆信息
+        CarDTO car = getCar(Long.valueOf(carId));
         //根据车辆Id获取司机Id
         Long driverId = getDriverId(carId);
         driverWorkInfoResponse.setDriverId(driverId);
         //根据司机Id获取司机信息
         DriverInfoRequest driverInfoRequest = new DriverInfoRequest();
         driverInfoRequest.setId(String.valueOf(driverId));
-        ResponseResult driverResponseResult = driverService.getDriver(driverInfoRequest);
-        JSONObject driverJsonObject = JSONObject.fromObject(driverResponseResult.getData());
-        driverWorkInfoResponse.setDriverPhone(driverJsonObject.getString("driverPhone"));
+        DriverUserDTO driver = driverService.getDriver(driverId);
+        driverWorkInfoResponse.setDriverPhone(driver.getDriverPhone());
         //根据司机Id获取司机工作状态
         driverWorkInfoResponse.setDriverWorkState(getDriverWorkState(driverId));
+        //获取其他信息
+        driverWorkInfoResponse.setCarId(carId);
+        driverWorkInfoResponse.setVehicleNo(car.getVehicleNo());
+        driverWorkInfoResponse.setLicenseId(driver.getLicenseId());
+
 
         //响应
         return ResponseResult.success(driverWorkInfoResponse);

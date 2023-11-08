@@ -1,5 +1,5 @@
-server:
-  port: 8089
+#server:
+#  port: 8089
 
 spring:
   cloud:
@@ -19,3 +19,16 @@ spring:
 Amap:
   key: "9e8f8ea4ba4cd6a55bfcd54d8b869f80"
   sid: 1009278
+
+---
+spring:
+  profiles: 8007
+server:
+  port: 8007
+
+---
+---
+spring:
+  profiles: 8008
+server:
+  port: 8008

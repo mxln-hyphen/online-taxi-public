@@ -35,6 +35,7 @@ public enum CommonStatusEnum {
      * 1400~1499 订单相关
      */
     ORDER_IS_EXIST(1411,"order is exist!"),
+    ORDER_UNMATCHED_DRIVER(1421,"未匹配到司机"),
 
     /**
      * 1500~1599 价格相关

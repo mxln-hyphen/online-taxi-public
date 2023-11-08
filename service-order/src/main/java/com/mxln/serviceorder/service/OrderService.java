@@ -16,6 +16,8 @@ import com.mxln.serviceorder.remote.ServiceMapClient;
 import com.mxln.serviceorder.remote.ServicePriceClient;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.spi.CurrencyNameProvider;
 
@@ -40,6 +43,9 @@ public class OrderService {
 
     @Autowired
     private ServiceDriverUserClient serviceDriverUserClient;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Value("${Amap.key}")
     private String key;
@@ -86,13 +92,20 @@ public class OrderService {
         OrderInfoDTO orderInfoDTO = generateOrderInfoDTO(orderInfoRequest);
 
         //插入数据库
-        //orderInfoMapper.insert(orderInfoDTO);
+        orderInfoMapper.insert(orderInfoDTO);
 
         //开始派单
-        dispatchOrder(orderInfoDTO);
+        //responseResult = dispatchOrder(orderInfoDTO);
 
         //响应
-        return ResponseResult.success();
+        return responseResult;
+    }
+
+    //测试
+    public void test(Long id){
+        //
+        OrderInfoDTO orderInfoDTO = orderInfoMapper.selectById(id);
+        dispatchOrder(orderInfoDTO);
     }
 
     /**
@@ -100,11 +113,28 @@ public class OrderService {
      * @param orderInfoDTO
      * @return
      */
-    private ResponseResult dispatchOrder(OrderInfoDTO orderInfoDTO){
+    public ResponseResult dispatchOrder(OrderInfoDTO orderInfoDTO){
         //搜索附近是否有可接单司机
         DriverWorkInfoResponse driverWorkInfoResponse = searchCar(orderInfoDTO);
-        System.out.println(driverWorkInfoResponse.getDriverPhone());
+        if(driverWorkInfoResponse==null){//没有可接单司机
+            //返回响应
+            return ResponseResult.fail().setCode(CommonStatusEnum.ORDER_UNMATCHED_DRIVER.getCode())
+                    .setMessage(CommonStatusEnum.ORDER_UNMATCHED_DRIVER.getMessage());
+        }
 
+        //将订单与司机匹配
+        orderInfoDTO.setDriverId(driverWorkInfoResponse.getDriverId());
+        orderInfoDTO.setDriverPhone(driverWorkInfoResponse.getDriverPhone());
+        orderInfoDTO.setCarId(Long.valueOf(driverWorkInfoResponse.getCarId()));
+        orderInfoDTO.setReceiveOrderTime(LocalDateTime.now());
+        orderInfoDTO.setLicenseId(driverWorkInfoResponse.getLicenseId());
+        orderInfoDTO.setVehicleNo(driverWorkInfoResponse.getVehicleNo());
+        orderInfoDTO.setOrderStatus(OrderConstant.DRIVER_TAKE_ORDER);
+
+        //更新数据库
+        orderInfoMapper.updateById(orderInfoDTO);
+
+        //返回响应
         return ResponseResult.success();
     }
 
@@ -146,12 +176,30 @@ public class OrderService {
                     //根据车辆id获取司机信息
                     ResponseResult driver = serviceDriverUserClient.getDriver(carId);
                     JSONObject driverJson = JSONObject.fromObject(driver.getData());
+                    long driverId = driverJson.getLong("driverId");
+
+                    String lockKey = (driverId+"".intern());
+                    RLock lock = redissonClient.getLock(lockKey);
+                    lock.lock();
+
+                    //判断司机工作状态是否为接单
                     if(driverJson.getInt("driverWorkState")
                             == DriverCarConstant.DRIVER_WORK_STATUS_ORDER){//司机工作状态为接单
+                        //判断司机是否有正在进行的订单
+                        if (isOngoingOrder(driverId)) {//如果司机有正在进行的订单
+                            System.out.printf("司机%d有正在进行的订单\n",driverId);
+                            lock.unlock();
+                            continue;
+                        }
+                        //返回司机信息
                         DriverWorkInfoResponse driverWorkInfoResponse = new DriverWorkInfoResponse();
-                        driverWorkInfoResponse.setDriverId(driverJson.getLong("driverId"));
+                        driverWorkInfoResponse.setDriverId(driverId);
                         driverWorkInfoResponse.setDriverPhone(driverJson.getString("driverPhone"));
+                        driverWorkInfoResponse.setCarId(carId);
+                        driverWorkInfoResponse.setLicenseId(driverJson.getString("licenseId"));
+                        driverWorkInfoResponse.setVehicleNo(driverJson.getString("vehicleNo"));
                         driverWorkInfoResponse.setDriverWorkState(DriverCarConstant.DRIVER_WORK_STATUS_ORDER);
+                        lock.unlock();
                         return driverWorkInfoResponse;
                     }
                 }
@@ -160,6 +208,29 @@ public class OrderService {
         }
         //响应
         return null;
+    }
+
+    /**
+     * 判断司机是否有正在进行的订单
+     * @param driverId
+     * @return 如果有正在进行的订单，返回true
+     */
+    private boolean isOngoingOrder(Long driverId){
+        //判断司机是否有正在进行的订单
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("driver_id",driverId);
+        List<OrderInfoDTO> orderInfoDTOS = orderInfoMapper.selectByMap(map);
+        for (OrderInfoDTO orderInfoDTO : orderInfoDTOS) {
+            Integer orderStatus = orderInfoDTO.getOrderStatus();
+            if(orderStatus==OrderConstant.DRIVER_TAKE_ORDER
+                    ||orderStatus==OrderConstant.DRIVER_GOTO_PASSENGER
+                    ||orderStatus==OrderConstant.DRIVER_ARRIVAL_DEPARTURE
+                    ||orderStatus==OrderConstant.TRIP_START
+                    ||orderStatus==OrderConstant.ARRIVAL_DESTINATION){
+                return true;
+            }
+        }
+        return false;
     }
 
     //生成OrderInfoDTO实例

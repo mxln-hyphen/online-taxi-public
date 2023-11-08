@@ -80,7 +80,7 @@ public class DriverService {
     }
 
     /**
-     * 根据司机id查询司机信息
+     * 查询司机信息
      * @param driverInfoRequest
      * @return
      */
@@ -92,6 +92,15 @@ public class DriverService {
 
         //响应
         return ResponseResult.success(driverUserDTOS.get(0));
+    }
+
+    /**
+     * 根据司机id查询driver表中的信息
+     * @param driverId
+     * @return
+     */
+    public DriverUserDTO getDriver(Long driverId){
+        return driverMapper.selectById(driverId);
     }
 
     /**
