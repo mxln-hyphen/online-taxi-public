@@ -32,4 +32,10 @@ public class TrackRequest {
     //搜索半径
     private String radius;
 
+    //开始时间
+    private String starttime;
+
+    //结束时间
+    private String endtime;
+
 }

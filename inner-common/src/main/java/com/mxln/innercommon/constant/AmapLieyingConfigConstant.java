@@ -22,4 +22,6 @@ public class AmapLieyingConfigConstant {
 
     //周边终端搜索
     public static String AROUNDSEARCH_URL = "https://tsapi.amap.com/v1/track/terminal/aroundsearch";
+
+    public static String TRACSEARCH_URL = "https://tsapi.amap.com/v1/track/terminal/trsearch";
 }

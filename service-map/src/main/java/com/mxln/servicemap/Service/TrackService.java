@@ -65,4 +65,17 @@ public class TrackService {
         //响应
         return ResponseResult.success(data);
     }
+
+    /**
+     * 根据起止时间查询轨迹信息
+     * @param trackRequest
+     * @return
+     */
+    public ResponseResult traceSearch(TrackRequest trackRequest){
+        //调用高德地图api根据起止时间查询轨迹信息
+        JSONObject jsonObject = trackClient.traceSearch(trackRequest);
+
+        //响应
+        return ResponseResult.success(jsonObject);
+    }
 }

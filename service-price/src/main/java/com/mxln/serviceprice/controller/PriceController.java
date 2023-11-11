@@ -2,10 +2,8 @@ package com.mxln.serviceprice.controller;
 
 import com.mxln.innercommon.dto.ForecastPriceDTO;
 import com.mxln.innercommon.dto.ResponseResult;
-import com.mxln.innercommon.request.ForecastPriceRequest;
-import com.mxln.innercommon.responses.ForecastPriceResponse;
+import com.mxln.innercommon.responses.priceResponse;
 import com.mxln.serviceprice.Service.PriceService;
-import com.mxln.serviceprice.remote.ServiceMapClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +17,17 @@ public class PriceController {
 
 
     @PostMapping("/forecast-price")
-    public ResponseResult<ForecastPriceResponse> forecastPrice(@RequestBody ForecastPriceDTO forecastPriceDTO){
-        System.out.println(forecastPriceDTO.getDepLatitude());
-
+    public ResponseResult<priceResponse> forecastPrice(@RequestBody ForecastPriceDTO forecastPriceDTO){
 
         return priceService.forecastPrice(forecastPriceDTO);
+    }
+
+    @PostMapping("/price")
+    public ResponseResult<priceResponse> price(@RequestBody ForecastPriceDTO forecastPriceDTO){
+
+        System.out.println(forecastPriceDTO.getDistance());
+        System.out.println(forecastPriceDTO.getDuration());
+
+        return priceService.price(forecastPriceDTO);
     }
 }

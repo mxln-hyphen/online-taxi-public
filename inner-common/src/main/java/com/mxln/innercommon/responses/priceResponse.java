@@ -3,7 +3,7 @@ package com.mxln.innercommon.responses;
 import lombok.Data;
 
 @Data
-public class ForecastPriceResponse {
+public class priceResponse {
 
-    private String forecastPrice;
+    private String price;
 }

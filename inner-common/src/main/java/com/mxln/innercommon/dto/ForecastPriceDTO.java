@@ -14,6 +14,12 @@ public class ForecastPriceDTO {
     //车型
     private String vehicleType;
 
+    //距离
+    private Integer distance;
+
+    //时长
+    private Integer duration;
+
     private String depLongitude;
 
     private String depLatitude;

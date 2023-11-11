@@ -160,4 +160,30 @@ public class TrackClient {
         return JSONObject.fromObject(forEntity.getBody()).getJSONObject("data");
     }
 
+    /**
+     * 调用高德地图api根据起止时间查询轨迹信息
+     * @param trackRequest
+     * @return
+     */
+    public JSONObject traceSearch(TrackRequest trackRequest){
+        //组装url
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>(){{
+            add("key",trackRequest.getKey());
+            add("sid",trackRequest.getSid());
+            add("tid",trackRequest.getTid());
+            add("starttime",trackRequest.getStarttime());
+            add("endtime",trackRequest.getEndtime());
+        }};
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, headers);
+
+        //调用高德地图猎鹰API
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(AmapLieyingConfigConstant.TRACSEARCH_URL
+                , request,String.class);
+
+        //响应
+        return JSONObject.fromObject(forEntity.getBody()).getJSONObject("data");
+    }
+
 }

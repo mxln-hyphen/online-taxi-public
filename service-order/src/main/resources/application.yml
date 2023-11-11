@@ -1,5 +1,5 @@
-#server:
-#  port: 8089
+server:
+  port: 8089
 
 spring:
   cloud:
@@ -32,3 +32,10 @@ spring:
   profiles: 8008
 server:
   port: 8008
+
+---
+---
+spring:
+  profiles: 8089
+server:
+  port: 8089

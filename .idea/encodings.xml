@@ -11,6 +11,7 @@
     <file url="file://$PROJECT_DIR$/service-passenger-user/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-passenger-user/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-price/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-sse-push/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/verificationcode/src/main/java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>

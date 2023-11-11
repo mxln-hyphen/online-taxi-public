@@ -7,16 +7,14 @@ import com.mxln.innercommon.dto.ForecastPriceDTO;
 import com.mxln.innercommon.dto.PriceRuleDTO;
 import com.mxln.innercommon.dto.ResponseResult;
 import com.mxln.innercommon.responses.DistanceResponse;
-import com.mxln.innercommon.responses.ForecastPriceResponse;
+import com.mxln.innercommon.responses.priceResponse;
 import com.mxln.serviceprice.mapper.PriceMapper;
 import com.mxln.serviceprice.remote.ServiceMapClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.CharacterIterator;
 
 @Service
 public class PriceService {
@@ -34,20 +32,15 @@ public class PriceService {
      * @param forecastPriceDTO
      * @return
      */
-    public ResponseResult<ForecastPriceResponse> forecastPrice(ForecastPriceDTO forecastPriceDTO) {
-        System.out.println("service-price:forecastPrice");
+    public ResponseResult<priceResponse> forecastPrice(ForecastPriceDTO forecastPriceDTO) {
         //生成请求体
         DistanceDTO distanceDTO = generateDTO(forecastPriceDTO);
 
         //请求service-map获取距离信息
         ResponseResult<DistanceResponse> distanceResponseResponseResult = serviceMapClient.driving(distanceDTO);
 
-        //获取最新版本计价规则，若不存在则将版本设置为1，否则将版本设置为原版本加1
-        QueryWrapper<PriceRuleDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("city_code", forecastPriceDTO.getCityCode());
-        wrapper.eq("vehicle_type", forecastPriceDTO.getVehicleType());
-        wrapper.orderByDesc("fare_version");
-        PriceRuleDTO priceRuleDTO = priceMapper.selectList(wrapper).get(0);
+        //获取最新版本计价规则
+        PriceRuleDTO priceRuleDTO = getRecentPriceRule(forecastPriceDTO.getCityCode(), forecastPriceDTO.getVehicleType());
 
         //根据距离信息和计价规则计算预估价格
         double price = getPrice(priceRuleDTO,
@@ -55,10 +48,31 @@ public class PriceService {
                 distanceResponseResponseResult.getData().getDuration());
 
         //响应
-        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
-        forecastPriceResponse.setForecastPrice(String.valueOf(price));
+        priceResponse priceResponse = new priceResponse();
+        priceResponse.setPrice(String.valueOf(price));
 
-        return ResponseResult.success(forecastPriceResponse);
+        return ResponseResult.success(priceResponse);
+    }
+
+    /**
+     * 计算具体价格
+     * @param forecastPriceDTO
+     * @return
+     */
+    public ResponseResult<priceResponse> price(ForecastPriceDTO forecastPriceDTO){
+        //获取最新版本计价规则
+        PriceRuleDTO priceRuleDTO = getRecentPriceRule(forecastPriceDTO.getCityCode(), forecastPriceDTO.getVehicleType());
+
+        //根据距离信息和计价规则计算预估价格
+        double price = getPrice(priceRuleDTO,
+                forecastPriceDTO.getDistance(),
+                forecastPriceDTO.getDuration());
+
+        //响应
+        priceResponse priceResponse = new priceResponse();
+        priceResponse.setPrice(String.valueOf(price));
+
+        return ResponseResult.success(priceResponse);
     }
 
     /**
@@ -108,5 +122,18 @@ public class PriceService {
         return distanceDTO;
     }
 
+    /**
+     * 获取最新计价规则
+     * @return
+     */
+    private PriceRuleDTO getRecentPriceRule(String ciyCode,String vehicleType){
+        //获取最新版本计价规则，若不存在则将版本设置为1，否则将版本设置为原版本加1
+        QueryWrapper<PriceRuleDTO> wrapper = new QueryWrapper<>();
+        wrapper.eq("city_code", ciyCode);
+        wrapper.eq("vehicle_type", vehicleType);
+        wrapper.orderByDesc("fare_version");
+        PriceRuleDTO priceRuleDTO = priceMapper.selectList(wrapper).get(0);
+        return priceRuleDTO;
+    }
 
 }

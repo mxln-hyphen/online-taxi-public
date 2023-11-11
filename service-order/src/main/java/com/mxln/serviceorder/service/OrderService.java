@@ -3,17 +3,17 @@ package com.mxln.serviceorder.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mxln.innercommon.constant.CommonStatusEnum;
 import com.mxln.innercommon.constant.DriverCarConstant;
+import com.mxln.innercommon.constant.IdentityEnum;
 import com.mxln.innercommon.constant.OrderConstant;
 import com.mxln.innercommon.dto.OrderInfoDTO;
 import com.mxln.innercommon.dto.ResponseResult;
-import com.mxln.innercommon.request.OrderInfoRequest;
-import com.mxln.innercommon.request.PriceRuleRequest;
-import com.mxln.innercommon.request.TrackRequest;
+import com.mxln.innercommon.request.*;
 import com.mxln.innercommon.responses.DriverWorkInfoResponse;
 import com.mxln.serviceorder.mapper.OrderInfoMapper;
 import com.mxln.serviceorder.remote.ServiceDriverUserClient;
 import com.mxln.serviceorder.remote.ServiceMapClient;
 import com.mxln.serviceorder.remote.ServicePriceClient;
+import com.mxln.serviceorder.remote.ServiceSsePushClient;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.redisson.api.RLock;
@@ -46,6 +46,9 @@ public class OrderService {
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Autowired
+    private ServiceSsePushClient serviceSsePushClient;
 
     @Value("${Amap.key}")
     private String key;
@@ -95,7 +98,7 @@ public class OrderService {
         orderInfoMapper.insert(orderInfoDTO);
 
         //开始派单
-        //responseResult = dispatchOrder(orderInfoDTO);
+        responseResult = dispatchOrder(orderInfoDTO);
 
         //响应
         return responseResult;
@@ -131,11 +134,45 @@ public class OrderService {
         orderInfoDTO.setVehicleNo(driverWorkInfoResponse.getVehicleNo());
         orderInfoDTO.setOrderStatus(OrderConstant.DRIVER_TAKE_ORDER);
 
+        //向司机派送订单
+        if (driverPushInfo(orderInfoDTO)) {
+            System.out.println("成功推送");
+        }
+
         //更新数据库
         orderInfoMapper.updateById(orderInfoDTO);
 
         //返回响应
         return ResponseResult.success();
+    }
+
+    /**
+     * 向司机推送所需订单信息
+     * @param orderInfoDTO
+     * @return
+     */
+    private boolean driverPushInfo(OrderInfoDTO orderInfoDTO){
+        //组装推送给司机的信息
+        PassengerInfoPushRequest passengerInfoPushRequest = new PassengerInfoPushRequest();
+        BeanUtils.copyProperties(orderInfoDTO,passengerInfoPushRequest);
+
+        PushRequest pushRequest = new PushRequest();
+        String userId = String.valueOf(orderInfoDTO.getDriverId());
+        String identity = String.valueOf(IdentityEnum.DRIVER.getIdentity());
+        pushRequest.setUserId(userId);
+        pushRequest.setIdentity(identity);
+        pushRequest.setContent(JSONObject.fromObject(passengerInfoPushRequest).toString());
+
+        //连接
+        //serviceSsePushClient.connect(userId,identity);
+
+        //推送
+        serviceSsePushClient.push(pushRequest);
+
+        //关闭连接
+        //serviceSsePushClient.close(userId,identity);
+
+        return true;
     }
 
 
