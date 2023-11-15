@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,6 +86,15 @@ public class OrderService {
         String cityCode = jsonObject.getString("address");
         String vehicleType = jsonObject.getString("vehicleType");
 
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try {
+            //将开始结束时间往外扩展比较时间转换带来的毫秒位置缺失
+            starttime = String.valueOf(format.parse(starttime).getTime()-1000);
+            endtime = String.valueOf(format.parse(endtime).getTime()+1000);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         //请求service-map获取行程距离和时长
         Map<String,String> map = new HashMap<>();
         map.put("key","9e8f8ea4ba4cd6a55bfcd54d8b869f80");
@@ -98,9 +110,10 @@ public class OrderService {
         JSONObject track = (JSONObject) tracks.get(0);
         Integer distance = track.getInt("distance");
         Integer time = track.getInt("time");
+
         //去掉时间后三位，转化为以秒为单位
-        StringBuilder builder = new StringBuilder(time);
-        Integer duration = Integer.parseInt(builder.substring(0,builder.length()-4).toString());
+        StringBuilder builder = new StringBuilder(String.valueOf(time));
+        Integer duration = Integer.parseInt(builder.substring(0,builder.length()-3));
 
         //请求service-price计算行程价格
         ForecastPriceDTO forecastPriceDTO = new ForecastPriceDTO();

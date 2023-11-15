@@ -40,4 +40,10 @@ public class OrderStatusController {
         return orderStatusService.tripArrivalDestination(orderStatusRequest);
     }
 
+    @PostMapping("/payment-completed")
+    public ResponseResult paymentCompleted(@RequestBody OrderStatusRequest orderStatusRequest){
+
+        return orderStatusService.paymentCompleted(orderStatusRequest);
+    }
+
 }

@@ -12,6 +12,7 @@
         <option value="$PROJECT_DIR$/api-boss/pom.xml" />
         <option value="$PROJECT_DIR$/api-driver/pom.xml" />
         <option value="$PROJECT_DIR$/service-order/pom.xml" />
+        <option value="$PROJECT_DIR$/service-pay/pom.xml" />
       </list>
     </option>
   </component>

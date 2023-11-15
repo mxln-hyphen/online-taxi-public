@@ -102,4 +102,24 @@ public class OrderStatusService {
 
     }
 
+    /**
+     * 乘客支付完毕
+     * @param orderStatusRequest
+     * @return
+     */
+    public ResponseResult paymentCompleted(OrderStatusRequest orderStatusRequest){
+        //获取订单信息
+        OrderInfoDTO orderInfoDTO = orderInfoMapper.selectById(orderStatusRequest.getId());
+
+        //装载新信息
+        orderInfoDTO.setOrderStatus(OrderConstant.PASSENGER_PAYMENT_COMPLETED);
+
+        //写入数据库
+        orderInfoMapper.updateById(orderInfoDTO);
+
+        //响应
+        return ResponseResult.success(orderInfoDTO);
+
+    }
+
 }

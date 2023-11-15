@@ -37,7 +37,6 @@ public class OrderController {
 
     @PostMapping("/arrival-destination")
     public ResponseResult ArrivalDestination(@RequestBody OrderStatusRequest orderStatusRequest){
-        System.out.println(1);
 
         return orderService.ArrivalDestination(orderStatusRequest);
     }

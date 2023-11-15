@@ -25,9 +25,6 @@ public class PriceController {
     @PostMapping("/price")
     public ResponseResult<priceResponse> price(@RequestBody ForecastPriceDTO forecastPriceDTO){
 
-        System.out.println(forecastPriceDTO.getDistance());
-        System.out.println(forecastPriceDTO.getDuration());
-
         return priceService.price(forecastPriceDTO);
     }
 }

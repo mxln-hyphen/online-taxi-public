@@ -50,12 +50,6 @@ public class TrackController {
         trackRequest.setStarttime(parammap.get("starttime"));
         trackRequest.setEndtime(parammap.get("endtime"));
 
-        System.out.println(trackRequest.getKey());
-        System.out.println(trackRequest.getSid());
-        System.out.println(trackRequest.getTid());
-        System.out.println(trackRequest.getEndtime());
-        System.out.println(trackRequest.getEndtime());
-
         return trackService.traceSearch(trackRequest);
     }
 
